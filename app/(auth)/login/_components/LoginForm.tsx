@@ -121,7 +121,7 @@ export default function LoginForm() {
         <p className="text-xs text-muted-foreground text-center">Demo Credentials</p>
         <div className="grid grid-cols-3 gap-2 mt-2">
           {[
-            { role: "Admin", email: "admin@stocksense.com", pass: "Admin@123" },
+            { role: "Admin", email: "Arnav@stocksense.com", pass: "Admin@123" },
             { role: "Manager", email: "manager@stocksense.com", pass: "Manager@123" },
             { role: "Staff", email: "staff@stocksense.com", pass: "Staff@123" },
           ].map((demo) => (
