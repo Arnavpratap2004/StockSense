@@ -1,0 +1,3 @@
+tests/test_stocksense.py::TestAuditLogs::test_02_audit_logs_table FAILED [ 90%]
+FAILED tests/test_stocksense.py::TestAuditLogs::test_02_audit_logs_table - As...
+================== 1 failed, 43 passed in 219.36s (0:03:39) ===================

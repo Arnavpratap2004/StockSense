@@ -1,0 +1,210 @@
+// ============================================================
+// StockSense — Stock Maintenance System (SMS)
+// Prisma Schema  |  PostgreSQL
+// ============================================================
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  MANAGER
+  STAFF
+}
+
+enum StockStatus {
+  IN_STOCK
+  LOW_STOCK
+  OUT_OF_STOCK
+  RESERVED
+  BACKORDERED
+  DAMAGED
+  ARCHIVED
+}
+
+enum ActionType {
+  SALE
+  RESTOCK
+  RETURN
+  ADJUSTMENT
+  RESERVATION
+  RESERVATION_CANCEL
+  DAMAGE_WRITE_OFF
+  ARCHIVE
+}
+
+enum ReportType {
+  LOW_STOCK
+  TRANSACTION_HISTORY
+  STOCK_LEVELS
+  SALES_SUMMARY
+}
+
+// ─────────────────────────────────────────
+// USER
+// ─────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(STAFF)
+  phoneNumber  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  transactions  Transaction[]
+  reports       Report[]
+  auditLogs     AuditLog[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+// ─────────────────────────────────────────
+// CATEGORY
+// ─────────────────────────────────────────
+
+model Category {
+  id         String      @id @default(cuid())
+  name       String      @unique
+  stockItems StockItem[]
+  createdAt  DateTime    @default(now())
+
+  @@map("categories")
+}
+
+// ─────────────────────────────────────────
+// SUPPLIER
+// ─────────────────────────────────────────
+
+model Supplier {
+  id          String      @id @default(cuid())
+  name        String
+  apiEndpoint String?
+  contactInfo String?
+  stockItems  StockItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("suppliers")
+}
+
+// ─────────────────────────────────────────
+// STOCK ITEM
+// ─────────────────────────────────────────
+
+model StockItem {
+  sku          String      @id
+  name         String
+  description  String?
+  pricePerUnit Float
+  quantity     Int         @default(0)
+  reorderPoint Int         @default(10)
+  status       StockStatus @default(IN_STOCK)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  supplierId String?
+  supplier   Supplier? @relation(fields: [supplierId], references: [id])
+
+  transactions Transaction[]
+
+  @@map("stock_items")
+}
+
+// ─────────────────────────────────────────
+// TRANSACTION
+// ─────────────────────────────────────────
+
+model Transaction {
+  id              String     @id @default(cuid())
+  timestamp       DateTime   @default(now())
+  actionType      ActionType
+  quantityChanged Int
+  previousQty     Int
+  newQty          Int
+  details         String?
+
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+
+  stockItemSku String
+  stockItem    StockItem @relation(fields: [stockItemSku], references: [sku])
+
+  @@index([stockItemSku])
+  @@index([userId])
+  @@index([timestamp])
+  @@map("transactions")
+}
+
+// ─────────────────────────────────────────
+// REPORT
+// ─────────────────────────────────────────
+
+model Report {
+  id            String     @id @default(cuid())
+  reportType    ReportType
+  generatedDate DateTime   @default(now())
+  dataContent   Json
+  filterParams  Json?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("reports")
+}
+
+// ─────────────────────────────────────────
+// AUDIT LOG
+// ─────────────────────────────────────────
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  action       String
+  targetEntity String
+  targetId     String
+  changedFields Json?
+  timestamp    DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([timestamp])
+  @@map("audit_logs")
+}
+
+// ─────────────────────────────────────────
+// NOTIFICATION
+// ─────────────────────────────────────────
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String
+  message   String
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}

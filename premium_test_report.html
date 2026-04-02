@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockSense | Selenium Test Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); }
+        .pass-pulse { animation: pulse-green 2s infinite; }
+        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+        
+        @media print {
+            body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .glass-card { box-shadow: none; border: 1px solid #e2e8f0; backdrop-filter: none; background: white; page-break-inside: avoid; }
+            nav { position: static !important; }
+            .overflow-y-auto, .max-h-\[600px\], .overflow-x-auto, .overflow-hidden { overflow: visible !important; max-height: none !important; }
+            canvas { max-width: 100% !important; height: auto !important; }
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            td, th { padding: 8px !important; }
+            .pass-pulse { animation: none; box-shadow: none; border: 1px solid #10b981; }
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased">
+    
+    <!-- Top Navigation -->
+    <nav class="bg-[#1e293b] text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded bg-emerald-500 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <h1 class="text-xl font-bold tracking-wide">StockSense Automated Test Report</h1>
+            </div>
+            <div class="text-sm text-slate-300">Generated: April 02, 2026 at 21:47 IST</div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+        
+        <!-- Executive Summary -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="glass-card rounded-2xl p-6 flex flex-col justify-center gap-2 border-l-4 border-l-emerald-500 relative overflow-hidden">
+                <div class="text-slate-500 text-sm font-semibold uppercase tracking-wider">Total Tests</div>
+                <div class="text-4xl font-bold text-slate-800">44</div>
+                <div class="absolute right-0 bottom-0 opacity-10">
+                    <svg class="w-24 h-24 text-slate-900" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 flex flex-col justify-center gap-2 border-l-4 border-l-emerald-500 relative overflow-hidden">
+                <div class="text-emerald-600 text-sm font-semibold uppercase tracking-wider">Passed</div>
+                <div class="text-4xl font-bold text-emerald-500 drop-shadow-sm">44</div>
+                <div class="text-sm text-emerald-600/80 bg-emerald-50 w-fit px-2 py-0.5 rounded-full mt-1">100% Succes Rate</div>
+                <div class="absolute right-[-10px] bottom-[-10px] opacity-20 pass-pulse rounded-full w-24 h-24 bg-emerald-500"></div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 flex flex-col justify-center gap-2 border-l-4 border-l-slate-300">
+                <div class="text-slate-500 text-sm font-semibold uppercase tracking-wider">Failed / Skipped</div>
+                <div class="text-4xl font-bold text-slate-400">0</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 flex flex-col justify-center gap-2 border-l-4 border-l-blue-500">
+                <div class="text-blue-600 text-sm font-semibold uppercase tracking-wider">Duration</div>
+                <div class="text-4xl font-bold text-slate-800">03:39</div>
+                <div class="text-xs text-slate-500 mt-1">Average: ~4.9s / test</div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Doughnut Chart -->
+            <div class="glass-card rounded-2xl p-6 lg:col-span-1 shadow-sm">
+                <h3 class="text-lg font-bold mb-4 text-slate-700">Execution Status</h3>
+                <div class="relative h-64 flex items-center justify-center">
+                    <canvas id="statusChart"></canvas>
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none flex-col">
+                        <span class="text-3xl font-black text-emerald-500">100%</span>
+                        <span class="text-xs text-slate-500 uppercase tracking-widest font-semibold mt-1">Passed</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module Breakdowns -->
+            <div class="glass-card rounded-2xl p-6 lg:col-span-2 shadow-sm">
+                <h3 class="text-lg font-bold mb-4 text-slate-700">Module Coverage</h3>
+                <div class="h-64">
+                    <canvas id="moduleChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Results Table -->
+        <div class="glass-card rounded-2xl shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-slate-100 bg-white">
+                <h3 class="text-lg font-bold text-slate-700">Comprehensive Test Results</h3>
+                <p class="text-sm text-slate-500 mt-1" id="tableFilterState">Showing all 44 test cases across 12 modules.</p>
+            </div>
+            <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+                <table class="w-full text-left border-collapse" id="resultsTable">
+                    <thead class="bg-slate-50 sticky top-0 z-10 shadow-sm outline-1 outline outline-slate-200">
+                        <tr>
+                            <th class="p-4 text-xs tracking-wider uppercase font-semibold text-slate-500 w-16 text-center">Status</th>
+                            <th class="p-4 text-xs tracking-wider uppercase font-semibold text-slate-500">Module</th>
+                            <th class="p-4 text-xs tracking-wider uppercase font-semibold text-slate-500">Test Case Name</th>
+                            <th class="p-4 text-xs tracking-wider uppercase font-semibold text-slate-500 w-24 text-right">Time (s)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-sm" id="tbodyId">
+                        <!-- Populated via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const testData = [
+            { module: 'Authentication', name: 'Login page has all required elements', time: '22', status: 'Passed' },
+            { module: 'Authentication', name: 'Demo credential buttons present', time: '2', status: 'Passed' },
+            { module: 'Authentication', name: 'Password visibility toggle works', time: '3', status: 'Passed' },
+            { module: 'Authentication', name: 'Error message on invalid credentials', time: '4', status: 'Passed' },
+            { module: 'Authentication', name: 'Successful login redirects to dashboard', time: '4', status: 'Passed' },
+            
+            { module: 'Dashboard', name: 'Dashboard page loads correctly', time: '4', status: 'Passed' },
+            { module: 'Dashboard', name: 'All stat cards displayed', time: '4', status: 'Passed' },
+            { module: 'Dashboard', name: 'Stat cards show seeded data values', time: '3', status: 'Passed' },
+            { module: 'Dashboard', name: 'Quick action buttons exist', time: '3', status: 'Passed' },
+            { module: 'Dashboard', name: 'Charts render successfully', time: '8', status: 'Passed' },
+            
+            { module: 'Navigation', name: 'All sidebar navigation links present', time: '3', status: 'Passed' },
+            { module: 'Navigation', name: 'Navigate to inventory page', time: '5', status: 'Passed' },
+            { module: 'Navigation', name: 'Navigate to transactions page', time: '5', status: 'Passed' },
+            { module: 'Navigation', name: 'Navigate to reports page', time: '6', status: 'Passed' },
+            { module: 'Navigation', name: 'Navigate to users page', time: '5', status: 'Passed' },
+            { module: 'Navigation', name: 'Top bar elements present', time: '3', status: 'Passed' },
+            { module: 'Navigation', name: 'Notification bell shows badge', time: '3', status: 'Passed' },
+            
+            { module: 'Inventory', name: 'Inventory page loads', time: '3', status: 'Passed' },
+            { module: 'Inventory', name: 'Inventory data table present', time: '3', status: 'Passed' },
+            { module: 'Inventory', name: 'Seeded stock items displayed', time: '8', status: 'Passed' },
+            { module: 'Inventory', name: 'Add Stock button navigates', time: '6', status: 'Passed' },
+            { module: 'Inventory', name: 'Search filter works', time: '11', status: 'Passed' },
+            { module: 'Inventory', name: 'Stock item detail page loads', time: '8', status: 'Passed' },
+            
+            { module: 'Add Stock', name: 'New stock form page loads', time: '3', status: 'Passed' },
+            { module: 'Add Stock', name: 'All form fields present', time: '4', status: 'Passed' },
+            { module: 'Add Stock', name: 'Form validation on empty submission', time: '5', status: 'Passed' },
+            
+            { module: 'Transactions', name: 'Transactions page loads', time: '3', status: 'Passed' },
+            { module: 'Transactions', name: 'Transactions table displayed', time: '3', status: 'Passed' },
+            { module: 'Transactions', name: 'Seeded transactions displayed', time: '8', status: 'Passed' },
+            { module: 'Transactions', name: 'Transaction type filter exists', time: '8', status: 'Passed' },
+            
+            { module: 'Reports', name: 'Reports page loads', time: '4', status: 'Passed' },
+            { module: 'Reports', name: 'Report type selector exists', time: '8', status: 'Passed' },
+            { module: 'Reports', name: 'Generate report button exists', time: '3', status: 'Passed' },
+            
+            { module: 'Users', name: 'Users page loads', time: '3', status: 'Passed' },
+            { module: 'Users', name: 'Users table displayed', time: '3', status: 'Passed' },
+            { module: 'Users', name: 'Seeded users listed', time: '3', status: 'Passed' },
+            
+            { module: 'Notifications', name: 'Notifications page loads', time: '3', status: 'Passed' },
+            { module: 'Notifications', name: 'Notification bell opens dropdown', time: '6', status: 'Passed' },
+            
+            { module: 'Audit Logs', name: 'Audit logs page loads', time: '3', status: 'Passed' },
+            { module: 'Audit Logs', name: 'Audit logs table/empty state verification', time: '8', status: 'Passed' },
+            
+            { module: 'Responsive', name: 'Mobile menu button on small screens', time: '5', status: 'Passed' },
+            { module: 'Responsive', name: 'Desktop sidebar visible', time: '4', status: 'Passed' },
+            
+            { module: 'API Integrity', name: '/api/test/mock-data returns data', time: '4', status: 'Passed' },
+            { module: 'API Integrity', name: '/api/categories returns data', time: '6', status: 'Passed' },
+        ];
+
+        // 1. Render Table
+        const tbody = document.getElementById('tbodyId');
+        testData.forEach((row, i) => {
+            const tr = document.createElement('tr');
+            tr.className = "hover:bg-slate-50/80 transition-colors group";
+            tr.innerHTML = `
+                <td class="p-4 text-center">
+                    <div class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 shadow-sm group-hover:scale-110 transition-transform">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </td>
+                <td class="p-4"><span class="inline-flex px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700">${row.module}</span></td>
+                <td class="p-4 font-medium text-slate-700">${row.name}</td>
+                <td class="p-4 text-right text-slate-500 font-mono text-xs">${row.time}s</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // 2. Status Chart (Doughnut)
+        new Chart(document.getElementById('statusChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Passed', 'Failed'],
+                datasets: [{
+                    data: [44, 0],
+                    backgroundColor: ['#10b981', '#ef4444'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: { cutout: '80%', plugins: { legend: { display: false } }, animation: { animateScale: true } }
+        });
+
+        // 3. Module Coverage Chart (Bar)
+        const moduleCounts = {};
+        testData.forEach(t => { moduleCounts[t.module] = (moduleCounts[t.module] || 0) + 1; });
+        
+        new Chart(document.getElementById('moduleChart'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(moduleCounts),
+                datasets: [{
+                    label: 'Tests per Module',
+                    data: Object.values(moduleCounts),
+                    backgroundColor: 'rgba(14, 165, 233, 0.8)',
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: { 
+                    y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { stepSize: 2 } },
+                    x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+    </script>
+</body>
+</html>

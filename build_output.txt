@@ -1,0 +1,81 @@
+﻿Γû▓ Next.js 16.2.2 (Turbopack)
+- Environments: .env.local, .env
+
+node.exe : ΓÜá The 
+"middleware" file 
+convention is 
+deprecated. Please 
+use "proxy" instead. 
+Learn more: https://ne
+xtjs.org/docs/messages
+/middleware-to-proxy
+At C:\Program Files\no
+dejs\npx.ps1:29 char:3
++   & $NODE_EXE 
+$NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
+    + CategoryInfo    
+          : 
+NotSpecified: (Γ    
+Üá The "middle...lewa 
+   
+re-to-proxy:String) [ 
+   ], RemoteException
+    + 
+FullyQualifiedError   
+ Id : 
+NativeCommandErr    or
+ 
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 12.1s
+  Running TypeScript ...
+  Finished TypeScript in 10.1s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/26) ...
+  Generating static pages using 7 workers (6/26) 
+  Generating static pages using 7 workers (12/26) 
+  Generating static pages using 7 workers (19/26) 
+Γ£ô Generating static pages using 7 workers (26/26) in 1243ms
+  Finalizing page optimization ...
+
+Route (app)
+Γöî ╞Æ /
+Γö£ Γùï /_not-found
+Γö£ Γùï /account
+Γö£ ╞Æ /api/audit-logs
+Γö£ ╞Æ /api/audit-logs/export
+Γö£ ╞Æ /api/auth/[...nextauth]
+Γö£ ╞Æ /api/categories
+Γö£ ╞Æ /api/dashboard/stats
+Γö£ ╞Æ /api/notifications
+Γö£ ╞Æ /api/notifications/[id]
+Γö£ ╞Æ /api/reports
+Γö£ ╞Æ /api/reports/[id]/export
+Γö£ ╞Æ /api/stock
+Γö£ ╞Æ /api/stock/[sku]
+Γö£ ╞Æ /api/stock/[sku]/quantity
+Γö£ ╞Æ /api/stock/[sku]/reserve
+Γö£ ╞Æ /api/suppliers
+Γö£ ╞Æ /api/test/mock-data
+Γö£ ╞Æ /api/test/reset-db
+Γö£ ╞Æ /api/transactions
+Γö£ ╞Æ /api/users
+Γö£ ╞Æ /api/users/[id]
+Γö£ Γùï /audit-logs
+Γö£ Γùï /dashboard
+Γö£ Γùï /inventory
+Γö£ ╞Æ /inventory/[sku]
+Γö£ Γùï /inventory/new
+Γö£ Γùï /login
+Γö£ Γùï /notifications
+Γö£ Γùï /reports
+Γö£ Γùï /transactions
+Γöö Γùï /users
+
+
+╞Æ Proxy (Middleware)
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+

@@ -1,0 +1,25 @@
+﻿node.exe : Loaded Prisma 
+config from 
+prisma.config.ts.
+At C:\Program 
+Files\nodejs\npx.ps1:29 
+char:3
++   & $NODE_EXE 
+$NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (L  
+  oaded Prisma c...isma   
+ .config.ts.:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+
+Prisma schema loaded from 
+prisma\schema.prisma.
+
+Γ£ö Generated Prisma Client (7.6.0) to .\generated\prisma in 160ms
+
