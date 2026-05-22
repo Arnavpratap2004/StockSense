@@ -1,3 +1,0 @@
-PASSED: 1
-FAILED: 1
-TOTAL: 2

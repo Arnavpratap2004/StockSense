@@ -1,3 +1,0 @@
-=== StockSense Selenium Test Results ===
-Passed: 0, Failed: 0
-
