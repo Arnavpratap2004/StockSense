@@ -3,15 +3,15 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/lib/button-variants";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, QrCode, Minus, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Plus, Search, QrCode, Minus, ChevronLeft, ChevronRight, Loader2, X } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/utils/format";
+import { cn } from "@/lib/utils";
 import { STATUS_CONFIG } from "@/lib/utils/stock-status";
 import { TableSkeleton } from "@/components/shared/LoadingSkeleton";
 import EmptyState from "@/components/shared/EmptyState";
@@ -112,61 +112,95 @@ export default function InventoryPage() {
     }
   };
 
+  const getQtyColor = (item: StockItem) => {
+    if (item.quantity === 0) return "text-[var(--danger)]";
+    if (item.quantity <= item.reorderPoint) return "text-[var(--warning)]";
+    return "text-[var(--text-primary)]";
+  };
+
   const statusOptions = ["IN_STOCK", "LOW_STOCK", "OUT_OF_STOCK", "RESERVED", "BACKORDERED", "DAMAGED"];
 
   return (
     <div className="space-y-6 animate-fade-in" data-testid="inventory-page">
       <div className="flex items-center justify-between flex-wrap gap-4">
-        <div>
-          <h1 className="text-2xl font-bold" data-testid="inventory-title">Inventory</h1>
-          <p className="text-muted-foreground">{totalItems} items total</p>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-display font-bold text-[var(--text-primary)]" data-testid="inventory-title">Inventory</h1>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[var(--brand-glow)] text-[var(--brand-primary)] border border-[var(--border-brand)] shadow-[0_0_8px_var(--brand-glow)] transition-all">
+            {totalItems} items
+          </span>
         </div>
         {["ADMIN", "MANAGER"].includes(userRole) && (
-          <Link href="/inventory/new" className={buttonVariants() + " bg-[#1E3A5F] hover:bg-[#152C4A]"} data-testid="add-stock-btn">
+          <Link href="/inventory/new" className={buttonVariants()} data-testid="add-stock-btn">
             <Plus className="w-4 h-4 mr-1" /> Add New Stock
           </Link>
         )}
       </div>
 
       {/* Filters */}
-      <Card data-testid="inventory-filters">
-        <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by name, SKU, or description..."
-                className="pl-10"
-                value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                data-testid="inventory-search"
-              />
-            </div>
-            <Select value={categoryFilter} onValueChange={(v) => { setCategoryFilter(v === "all" ? "" : (v ?? "")); setPage(1); }}>
-              <SelectTrigger className="w-full md:w-48" data-testid="inventory-category-filter">
-                <SelectValue placeholder="All Categories" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                {categories.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v === "all" ? "" : (v ?? "")); setPage(1); }}>
-              <SelectTrigger className="w-full md:w-48" data-testid="inventory-status-filter">
-                <SelectValue placeholder="All Statuses" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                {statusOptions.map((s) => (
-                  <SelectItem key={s} value={s}>{STATUS_CONFIG[s as keyof typeof STATUS_CONFIG]?.label || s}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-4" data-testid="inventory-filters">
+        <div className="flex flex-col md:flex-row gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+            <Input
+              placeholder="Search by name, SKU, or description..."
+              className="pl-10 h-9 bg-[var(--bg-elevated)] border-[var(--border-default)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--brand-primary)]"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              data-testid="inventory-search"
+            />
           </div>
-        </CardContent>
-      </Card>
+          <Select value={categoryFilter} onValueChange={(v) => { setCategoryFilter(v === "all" ? "" : (v ?? "")); setPage(1); }}>
+            <SelectTrigger className="w-full md:w-48 h-9 bg-[var(--bg-elevated)] border-[var(--border-default)] text-[var(--text-primary)]" data-testid="inventory-category-filter">
+              <SelectValue placeholder="All Categories" />
+            </SelectTrigger>
+            <SelectContent className="bg-[var(--bg-elevated)] border-[var(--border-strong)]">
+              <SelectItem value="all">All Categories</SelectItem>
+              {categories.map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v === "all" ? "" : (v ?? "")); setPage(1); }}>
+            <SelectTrigger className="w-full md:w-48 h-9 bg-[var(--bg-elevated)] border-[var(--border-default)] text-[var(--text-primary)]" data-testid="inventory-status-filter">
+              <SelectValue placeholder="All Statuses" />
+            </SelectTrigger>
+            <SelectContent className="bg-[var(--bg-elevated)] border-[var(--border-strong)]">
+              <SelectItem value="all">All Statuses</SelectItem>
+              {statusOptions.map((s) => (
+                <SelectItem key={s} value={s}>{STATUS_CONFIG[s as keyof typeof STATUS_CONFIG]?.label || s}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {/* Active Filter Pills */}
+        {(categoryFilter || statusFilter || search) && (
+          <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-[var(--border-subtle)] animate-slide-in">
+            <span className="text-xs text-[var(--text-muted)] flex items-center mr-1">Active Filters:</span>
+            {search && (
+              <Badge variant="outline" className="bg-[var(--bg-overlay)] border-[var(--border-strong)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] px-2 py-1 gap-1 cursor-pointer" onClick={() => setSearch("")}>
+                Search: {search} <X className="w-3 h-3 ml-1 hover:text-[var(--danger)] transition-colors" />
+              </Badge>
+            )}
+            {categoryFilter && (
+              <Badge variant="outline" className="bg-[var(--bg-overlay)] border-[var(--border-strong)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] px-2 py-1 gap-1 cursor-pointer" onClick={() => setCategoryFilter("")}>
+                Category: {categories.find((c) => c.id === categoryFilter)?.name || categoryFilter} <X className="w-3 h-3 ml-1 hover:text-[var(--danger)] transition-colors" />
+              </Badge>
+            )}
+            {statusFilter && (
+              <Badge variant="outline" className="bg-[var(--bg-overlay)] border-[var(--border-strong)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] px-2 py-1 gap-1 cursor-pointer" onClick={() => setStatusFilter("")}>
+                Status: {STATUS_CONFIG[statusFilter as keyof typeof STATUS_CONFIG]?.label || statusFilter} <X className="w-3 h-3 ml-1 hover:text-[var(--danger)] transition-colors" />
+              </Badge>
+            )}
+            <button 
+              className="text-xs text-[var(--text-muted)] hover:text-[var(--danger)] transition-colors ml-auto flex items-center gap-1"
+              onClick={() => { setSearch(""); setCategoryFilter(""); setStatusFilter(""); setPage(1); }}
+            >
+              Clear All
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Table */}
       {loading ? (
@@ -176,52 +210,61 @@ export default function InventoryPage() {
       ) : (
         <>
           {/* Desktop Table */}
-          <Card className="hidden md:block" data-testid="inventory-table-card">
+          <div className="hidden md:block bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl overflow-hidden" data-testid="inventory-table-card">
             <div className="overflow-x-auto">
               <table className="w-full text-sm" data-testid="inventory-table">
                 <thead>
-                  <tr className="border-b bg-muted/50">
-                    <th className="text-left p-3 font-medium text-muted-foreground">SKU</th>
-                    <th className="text-left p-3 font-medium text-muted-foreground">Name</th>
-                    <th className="text-left p-3 font-medium text-muted-foreground">Category</th>
-                    <th className="text-right p-3 font-medium text-muted-foreground">Quantity</th>
-                    <th className="text-left p-3 font-medium text-muted-foreground">Status</th>
-                    <th className="text-right p-3 font-medium text-muted-foreground">Price</th>
-                    <th className="text-right p-3 font-medium text-muted-foreground">Reorder Pt</th>
-                    <th className="text-center p-3 font-medium text-muted-foreground">Actions</th>
+                  <tr className="bg-[var(--bg-elevated)] border-b border-[var(--border-subtle)]">
+                    <th className="text-left p-3 text-[11px] uppercase tracking-widest font-medium text-[var(--text-muted)]">SKU</th>
+                    <th className="text-left p-3 text-[11px] uppercase tracking-widest font-medium text-[var(--text-muted)]">Name</th>
+                    <th className="text-left p-3 text-[11px] uppercase tracking-widest font-medium text-[var(--text-muted)]">Category</th>
+                    <th className="text-right p-3 text-[11px] uppercase tracking-widest font-medium text-[var(--text-muted)]">Quantity</th>
+                    <th className="text-left p-3 text-[11px] uppercase tracking-widest font-medium text-[var(--text-muted)]">Status</th>
+                    <th className="text-right p-3 text-[11px] uppercase tracking-widest font-medium text-[var(--text-muted)]">Price</th>
+                    <th className="text-right p-3 text-[11px] uppercase tracking-widest font-medium text-[var(--text-muted)]">Reorder Pt</th>
+                    <th className="text-center p-3 text-[11px] uppercase tracking-widest font-medium text-[var(--text-muted)]">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="animate-stagger-in">
                   {items.map((item, index) => {
                     const statusConf = STATUS_CONFIG[item.status as keyof typeof STATUS_CONFIG];
                     return (
                       <tr
                         key={item.sku}
-                        className="border-b last:border-0 hover:bg-muted/30 transition cursor-pointer"
+                        className="group/row border-b border-[var(--border-subtle)] last:border-0 hover:bg-[var(--bg-overlay)] transition-colors duration-200 cursor-pointer h-[52px] relative"
                         data-testid={`inventory-row-${index}`}
                         data-sku={item.sku}
                         onClick={() => router.push(`/inventory/${item.sku}`)}
                       >
-                        <td className="p-3 font-mono text-xs font-medium" data-testid={`sku-${index}`}>{item.sku}</td>
-                        <td className="p-3 font-medium" data-testid={`name-${index}`}>{item.name}</td>
-                        <td className="p-3 text-muted-foreground" data-testid={`category-${index}`}>{item.category?.name || "—"}</td>
+                        <td className="p-3 font-mono text-[13px] font-medium text-[var(--brand-primary)] relative" data-testid={`sku-${index}`}>
+                          <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[var(--brand-primary)] opacity-0 group-hover/row:opacity-100 transition-opacity duration-300" />
+                          <span className="pl-2" title="Click to open">{item.sku}</span>
+                        </td>
+                        <td className="p-3" data-testid={`name-${index}`}>
+                          <span className="font-medium text-[var(--text-primary)] group-hover/row:text-[var(--brand-primary)] transition-colors">{item.name}</span>
+                        </td>
+                        <td className="p-3" data-testid={`category-${index}`}>
+                          <span className="inline-flex px-2 py-0.5 rounded-md text-xs bg-[var(--bg-overlay)] text-[var(--text-secondary)]">
+                            {item.category?.name || "—"}
+                          </span>
+                        </td>
                         <td className="p-3 text-right" data-testid={`quantity-${index}`}>
                           <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
                             <Button
                               variant="outline"
                               size="icon"
-                              className="h-7 w-7"
+                              className="h-7 w-7 border-[var(--border-default)]"
                               disabled={adjustingQty === item.sku || item.quantity <= 0}
                               onClick={() => adjustQuantity(item.sku, -1)}
                               data-testid={`qty-decrease-${index}`}
                             >
                               {adjustingQty === item.sku ? <Loader2 className="w-3 h-3 animate-spin" /> : <Minus className="w-3 h-3" />}
                             </Button>
-                            <span className="w-10 text-center font-medium">{item.quantity}</span>
+                            <span className={`w-10 text-center font-mono font-medium text-[15px] ${getQtyColor(item)}`}>{item.quantity}</span>
                             <Button
                               variant="outline"
                               size="icon"
-                              className="h-7 w-7"
+                              className="h-7 w-7 border-[var(--border-default)]"
                               disabled={adjustingQty === item.sku}
                               onClick={() => adjustQuantity(item.sku, 1)}
                               data-testid={`qty-increase-${index}`}
@@ -232,17 +275,17 @@ export default function InventoryPage() {
                         </td>
                         <td className="p-3" data-testid={`status-${index}`}>
                           {statusConf && (
-                            <Badge variant="outline" className={`${statusConf.bgColor} ${statusConf.color} border text-xs`}>
-                              <span className={`w-1.5 h-1.5 rounded-full ${statusConf.dotColor} mr-1.5`} />
+                            <Badge variant="outline" className={cn(statusConf.bgColor, statusConf.color, "border text-xs rounded-full px-2.5 py-0.5 shadow-sm")}>
+                              <span className={cn("w-1.5 h-1.5 rounded-full mr-1.5 inline-block", statusConf.dotColor, ["LOW_STOCK", "OUT_OF_STOCK"].includes(item.status) && "animate-pulse-dot shadow-glow")} />
                               {statusConf.label}
                             </Badge>
                           )}
                         </td>
-                        <td className="p-3 text-right" data-testid={`price-${index}`}>{formatCurrency(item.pricePerUnit)}</td>
-                        <td className="p-3 text-right text-muted-foreground" data-testid={`reorder-${index}`}>{item.reorderPoint}</td>
+                        <td className="p-3 text-right font-mono text-[var(--text-secondary)]" data-testid={`price-${index}`}>{formatCurrency(item.pricePerUnit)}</td>
+                        <td className="p-3 text-right font-mono text-[var(--text-muted)]" data-testid={`reorder-${index}`}>{item.reorderPoint}</td>
                         <td className="p-3 text-center" onClick={(e) => e.stopPropagation()}>
                           <Button variant="ghost" size="icon" className="h-8 w-8" data-testid={`qr-btn-${index}`}>
-                            <QrCode className="w-4 h-4 text-muted-foreground" />
+                            <QrCode className="w-4 h-4 text-[var(--text-muted)]" />
                           </Button>
                         </td>
                       </tr>
@@ -251,33 +294,38 @@ export default function InventoryPage() {
                 </tbody>
               </table>
             </div>
-          </Card>
+          </div>
 
           {/* Mobile Cards */}
-          <div className="md:hidden space-y-3" data-testid="inventory-cards-mobile">
+          <div className="md:hidden space-y-3 animate-stagger-in" data-testid="inventory-cards-mobile">
             {items.map((item, index) => {
               const statusConf = STATUS_CONFIG[item.status as keyof typeof STATUS_CONFIG];
               return (
-                <Card key={item.sku} className="cursor-pointer hover:shadow-md transition" data-testid={`inventory-card-${index}`} onClick={() => router.push(`/inventory/${item.sku}`)}>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <p className="font-medium">{item.name}</p>
-                        <p className="text-xs text-muted-foreground font-mono">{item.sku}</p>
-                      </div>
-                      {statusConf && (
-                        <Badge variant="outline" className={`${statusConf.bgColor} ${statusConf.color} border text-xs`}>
-                          {statusConf.label}
-                        </Badge>
-                      )}
+                <div
+                  key={item.sku}
+                  className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-4 cursor-pointer hover:border-[var(--border-brand)] hover:shadow-lg hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 relative overflow-hidden group"
+                  data-testid={`inventory-card-${index}`}
+                  onClick={() => router.push(`/inventory/${item.sku}`)}
+                >
+                  <div className="absolute top-0 left-0 w-full h-[2px]" style={{ background: statusConf?.color.replace("text-[", "").replace("]", "") || "var(--border-subtle)" }} />
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <p className="font-medium text-[var(--text-primary)]">{item.name}</p>
+                      <p className="text-xs text-[var(--brand-primary)] font-mono">{item.sku}</p>
                     </div>
-                    <div className="grid grid-cols-3 gap-2 mt-3 text-sm">
-                      <div><span className="text-muted-foreground">Qty:</span> <span className="font-medium">{item.quantity}</span></div>
-                      <div><span className="text-muted-foreground">Price:</span> <span className="font-medium">{formatCurrency(item.pricePerUnit)}</span></div>
-                      <div><span className="text-muted-foreground">Reorder:</span> <span className="font-medium">{item.reorderPoint}</span></div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    {statusConf && (
+                      <Badge variant="outline" className={cn(statusConf.bgColor, statusConf.color, "border text-xs rounded-full shadow-sm")}>
+                        <span className={cn("w-1 h-1 rounded-full mr-1 inline-block", statusConf.dotColor, ["LOW_STOCK", "OUT_OF_STOCK"].includes(item.status) && "animate-pulse-dot")} />
+                        {statusConf.label}
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 mt-3 text-sm">
+                    <div><span className="text-[var(--text-muted)]">Qty:</span> <span className={`font-mono font-medium ${getQtyColor(item)}`}>{item.quantity}</span></div>
+                    <div><span className="text-[var(--text-muted)]">Price:</span> <span className="font-mono font-medium text-[var(--text-secondary)]">{formatCurrency(item.pricePerUnit)}</span></div>
+                    <div><span className="text-[var(--text-muted)]">Reorder:</span> <span className="font-mono font-medium text-[var(--text-secondary)]">{item.reorderPoint}</span></div>
+                  </div>
+                </div>
               );
             })}
           </div>
@@ -285,12 +333,14 @@ export default function InventoryPage() {
           {/* Pagination */}
           <div className="flex items-center justify-between" data-testid="inventory-pagination">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Rows per page:</span>
+              <span className="text-sm text-[var(--text-muted)]">
+                Showing {(page - 1) * pageSize + 1}-{Math.min(page * pageSize, totalItems)} of {totalItems} items
+              </span>
               <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
-                <SelectTrigger className="w-20 h-8" data-testid="page-size-select">
+                <SelectTrigger className="w-20 h-8 bg-[var(--bg-elevated)] border-[var(--border-default)] text-[var(--text-secondary)] text-xs" data-testid="page-size-select">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-[var(--bg-elevated)] border-[var(--border-strong)]">
                   <SelectItem value="10">10</SelectItem>
                   <SelectItem value="20">20</SelectItem>
                   <SelectItem value="50">50</SelectItem>
@@ -298,13 +348,13 @@ export default function InventoryPage() {
               </Select>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-[var(--text-muted)]">
                 Page {page} of {totalPages}
               </span>
-              <Button variant="outline" size="icon" className="h-8 w-8" disabled={page <= 1} onClick={() => setPage(page - 1)} data-testid="page-prev">
+              <Button variant="outline" size="icon" className="h-8 w-8 border-[var(--border-default)]" disabled={page <= 1} onClick={() => setPage(page - 1)} data-testid="page-prev">
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <Button variant="outline" size="icon" className="h-8 w-8" disabled={page >= totalPages} onClick={() => setPage(page + 1)} data-testid="page-next">
+              <Button variant="outline" size="icon" className="h-8 w-8 border-[var(--border-default)]" disabled={page >= totalPages} onClick={() => setPage(page + 1)} data-testid="page-next">
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </div>

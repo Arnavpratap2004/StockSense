@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Plus, Trash2, Loader2 } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
@@ -18,6 +16,12 @@ import { TableSkeleton } from "@/components/shared/LoadingSkeleton";
 interface User {
   id: string; username: string; email: string; role: string; phoneNumber: string | null; createdAt: string;
 }
+
+const roleBadgeColors: Record<string, string> = {
+  ADMIN: "bg-[var(--brand-glow)] text-[var(--brand-primary)] border-[var(--border-brand)]",
+  MANAGER: "bg-[var(--info-bg)] text-[var(--info)] border-[rgba(59,130,246,0.2)]",
+  STAFF: "bg-[var(--bg-overlay)] text-[var(--text-secondary)] border-[var(--border-default)]",
+};
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -68,7 +72,7 @@ export default function UsersPage() {
     } catch { toast.error("Failed"); } finally { setDeleting(false); }
   };
 
-  const roleBadgeColor: Record<string, string> = { ADMIN: "bg-red-50 text-red-700 border-red-200", MANAGER: "bg-blue-50 text-blue-700 border-blue-200", STAFF: "bg-gray-50 text-gray-700 border-gray-200" };
+  const inputClasses = "bg-[var(--bg-elevated)] border-[var(--border-default)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--brand-primary)] focus:shadow-[0_0_0_3px_var(--brand-glow)]";
 
   if (loading) return <div data-testid="loading-spinner"><TableSkeleton /></div>;
 
@@ -76,47 +80,50 @@ export default function UsersPage() {
     <div className="space-y-6 animate-fade-in" data-testid="users-page">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold" data-testid="users-title">User Management</h1>
-          <p className="text-muted-foreground">{users.length} users</p>
+          <h1 className="text-2xl font-display font-bold text-[var(--text-primary)]" data-testid="users-title">User Management</h1>
+          <p className="text-[var(--text-secondary)] text-sm">{users.length} users</p>
         </div>
-        <Button onClick={() => setAddOpen(true)} className="bg-[#1E3A5F] hover:bg-[#152C4A]" data-testid="add-user-btn">
+        <Button onClick={() => setAddOpen(true)} data-testid="add-user-btn" className="bg-gradient-to-r from-[var(--brand-primary)] to-[var(--brand-secondary)] hover:shadow-[0_0_15px_rgba(59, 130, 246,0.3)] hover:-translate-y-0.5 border-none text-white transition-all duration-300">
           <Plus className="w-4 h-4 mr-1" /> Add User
         </Button>
       </div>
 
       {users.length === 0 ? <EmptyState title="No users" /> : (
-        <Card data-testid="users-table-card">
+        <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl overflow-hidden" data-testid="users-table-card">
           <div className="overflow-x-auto">
             <table className="w-full text-sm" data-testid="users-table">
               <thead>
-                <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 font-medium text-muted-foreground">Username</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Email</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Role</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Phone</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Created</th>
-                  <th className="text-center p-3 font-medium text-muted-foreground">Actions</th>
+                <tr className="bg-[var(--bg-elevated)] border-b border-[var(--border-subtle)]">
+                  <th className="text-left p-3 text-[11px] uppercase tracking-widest font-medium text-[var(--text-muted)]">Username</th>
+                  <th className="text-left p-3 text-[11px] uppercase tracking-widest font-medium text-[var(--text-muted)]">Email</th>
+                  <th className="text-left p-3 text-[11px] uppercase tracking-widest font-medium text-[var(--text-muted)]">Role</th>
+                  <th className="text-left p-3 text-[11px] uppercase tracking-widest font-medium text-[var(--text-muted)]">Phone</th>
+                  <th className="text-left p-3 text-[11px] uppercase tracking-widest font-medium text-[var(--text-muted)]">Created</th>
+                  <th className="text-center p-3 text-[11px] uppercase tracking-widest font-medium text-[var(--text-muted)]">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="animate-stagger-in">
                 {users.map((u, i) => (
-                  <tr key={u.id} className="border-b last:border-0 hover:bg-muted/30 transition" data-testid={`user-row-${i}`} data-user-id={u.id}>
-                    <td className="p-3 font-medium" data-testid={`user-name-${i}`}>{u.username}</td>
-                    <td className="p-3 text-muted-foreground" data-testid={`user-email-${i}`}>{u.email}</td>
+                  <tr key={u.id} className="group/row border-b border-[var(--border-subtle)] last:border-0 hover:bg-[var(--bg-overlay)] transition-colors duration-200 relative" data-testid={`user-row-${i}`} data-user-id={u.id}>
+                    <td className="p-3 font-medium text-[var(--text-primary)] relative" data-testid={`user-name-${i}`}>
+                      <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[var(--brand-primary)] opacity-0 group-hover/row:opacity-100 transition-opacity duration-300" />
+                      <span className="pl-2 group-hover/row:text-[var(--brand-primary)] transition-colors">{u.username}</span>
+                    </td>
+                    <td className="p-3 text-[var(--text-secondary)]" data-testid={`user-email-${i}`}>{u.email}</td>
                     <td className="p-3">
                       <Select value={u.role} onValueChange={(v) => { if (v) updateRole(u.id, v); }}>
-                        <SelectTrigger className="w-32 h-8" data-testid={`user-role-${i}`}><SelectValue /></SelectTrigger>
-                        <SelectContent>
+                        <SelectTrigger className="w-32 h-8 bg-[var(--bg-elevated)] border-[var(--border-default)] text-[var(--text-primary)]" data-testid={`user-role-${i}`}><SelectValue /></SelectTrigger>
+                        <SelectContent className="bg-[var(--bg-elevated)] border-[var(--border-strong)]">
                           <SelectItem value="ADMIN">Admin</SelectItem>
                           <SelectItem value="MANAGER">Manager</SelectItem>
                           <SelectItem value="STAFF">Staff</SelectItem>
                         </SelectContent>
                       </Select>
                     </td>
-                    <td className="p-3 text-muted-foreground">{u.phoneNumber || "—"}</td>
-                    <td className="p-3 text-muted-foreground text-xs">{formatDate(u.createdAt)}</td>
+                    <td className="p-3 text-[var(--text-secondary)]">{u.phoneNumber || "—"}</td>
+                    <td className="p-3 text-[var(--text-muted)] text-xs font-mono">{formatDate(u.createdAt)}</td>
                     <td className="p-3 text-center">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => setDeleteId(u.id)} data-testid={`delete-user-${i}`}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-[var(--danger)] hover:bg-[var(--danger-bg)]" onClick={() => setDeleteId(u.id)} data-testid={`delete-user-${i}`}>
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </td>
@@ -125,29 +132,29 @@ export default function UsersPage() {
               </tbody>
             </table>
           </div>
-        </Card>
+        </div>
       )}
 
       {/* Add User Modal */}
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent data-testid="add-user-modal">
-          <DialogHeader><DialogTitle>Add New User</DialogTitle></DialogHeader>
+        <DialogContent className="bg-[var(--bg-elevated)] border-[var(--border-strong)]" data-testid="add-user-modal">
+          <DialogHeader><DialogTitle className="text-[var(--text-primary)] font-display">Add New User</DialogTitle></DialogHeader>
           <div className="space-y-4 py-2">
-            <div className="space-y-1"><Label>Username</Label><Input value={form.username} onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))} data-testid="new-user-username" /></div>
-            <div className="space-y-1"><Label>Email</Label><Input type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} data-testid="new-user-email" /></div>
-            <div className="space-y-1"><Label>Password</Label><Input type="password" value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))} data-testid="new-user-password" /></div>
+            <div className="space-y-1"><Label className="text-xs uppercase tracking-wide text-[var(--text-secondary)]">Username</Label><Input value={form.username} onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))} data-testid="new-user-username" className={inputClasses} /></div>
+            <div className="space-y-1"><Label className="text-xs uppercase tracking-wide text-[var(--text-secondary)]">Email</Label><Input type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} data-testid="new-user-email" className={inputClasses} /></div>
+            <div className="space-y-1"><Label className="text-xs uppercase tracking-wide text-[var(--text-secondary)]">Password</Label><Input type="password" value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))} data-testid="new-user-password" className={inputClasses} /></div>
             <div className="space-y-1">
-              <Label>Role</Label>
+              <Label className="text-xs uppercase tracking-wide text-[var(--text-secondary)]">Role</Label>
               <Select value={form.role} onValueChange={(v) => { if (v) setForm((f) => ({ ...f, role: v })); }}>
-                <SelectTrigger data-testid="new-user-role"><SelectValue /></SelectTrigger>
-                <SelectContent><SelectItem value="ADMIN">Admin</SelectItem><SelectItem value="MANAGER">Manager</SelectItem><SelectItem value="STAFF">Staff</SelectItem></SelectContent>
+                <SelectTrigger data-testid="new-user-role" className={inputClasses}><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-[var(--bg-elevated)] border-[var(--border-strong)]"><SelectItem value="ADMIN">Admin</SelectItem><SelectItem value="MANAGER">Manager</SelectItem><SelectItem value="STAFF">Staff</SelectItem></SelectContent>
               </Select>
             </div>
-            <div className="space-y-1"><Label>Phone (optional)</Label><Input value={form.phoneNumber} onChange={(e) => setForm((f) => ({ ...f, phoneNumber: e.target.value }))} data-testid="new-user-phone" /></div>
+            <div className="space-y-1"><Label className="text-xs uppercase tracking-wide text-[var(--text-secondary)]">Phone (optional)</Label><Input value={form.phoneNumber} onChange={(e) => setForm((f) => ({ ...f, phoneNumber: e.target.value }))} data-testid="new-user-phone" className={inputClasses} /></div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setAddOpen(false)} data-testid="cancel-add-user">Cancel</Button>
-            <Button onClick={addUser} disabled={saving} className="bg-[#1E3A5F]" data-testid="confirm-add-user">
+            <Button variant="outline" onClick={() => setAddOpen(false)} data-testid="cancel-add-user" className="border-[var(--border-default)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)] transition-colors">Cancel</Button>
+            <Button onClick={addUser} disabled={saving} data-testid="confirm-add-user" className="bg-gradient-to-r from-[var(--brand-primary)] to-[var(--brand-secondary)] hover:shadow-[0_0_15px_rgba(59, 130, 246,0.3)] hover:-translate-y-0.5 border-none text-white transition-all duration-300">
               {saving ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null} Create User
             </Button>
           </DialogFooter>

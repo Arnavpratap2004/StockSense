@@ -36,17 +36,23 @@ export default function ConfirmDialog({
 }: ConfirmDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="bg-[var(--bg-elevated)] border-[var(--border-strong)]">
         <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
+          <AlertDialogTitle className="text-[var(--text-primary)] font-display">{title}</AlertDialogTitle>
+          <AlertDialogDescription className="text-[var(--text-secondary)]">{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={loading}>{cancelLabel}</AlertDialogCancel>
+          <AlertDialogCancel disabled={loading} className="bg-[var(--bg-overlay)] border-[var(--border-default)] text-[var(--text-primary)] hover:bg-[var(--bg-surface)]">
+            {cancelLabel}
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             disabled={loading}
-            className={variant === "destructive" ? "bg-red-600 hover:bg-red-700" : ""}
+            className={
+              variant === "destructive"
+                ? "bg-[var(--danger)] hover:brightness-110 text-white"
+                : "bg-[var(--brand-primary)] hover:brightness-110 text-[var(--text-inverse)]"
+            }
           >
             {loading ? "Processing..." : confirmLabel}
           </AlertDialogAction>

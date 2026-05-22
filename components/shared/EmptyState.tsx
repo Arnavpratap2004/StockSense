@@ -14,13 +14,16 @@ export default function EmptyState({
   action,
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-center animate-fade-in">
-      <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
-        {icon || <Package className="w-8 h-8 text-muted-foreground" />}
+    <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in relative rounded-xl border border-dashed border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden group">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59, 130, 246,0.05),transparent_70%)] pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="w-20 h-20 rounded-3xl bg-[rgba(59, 130, 246,0.05)] border border-[rgba(59, 130, 246,0.1)] flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(59, 130, 246,0.1)] animate-[float_6s_ease-in-out_infinite] relative z-10">
+        <div className="text-[var(--brand-primary)] opacity-80">
+          {icon || <Package className="w-10 h-10 drop-shadow-[0_0_8px_rgba(59, 130, 246,0.5)]" />}
+        </div>
       </div>
-      <h3 className="text-lg font-semibold text-foreground">{title}</h3>
-      <p className="text-sm text-muted-foreground mt-1 max-w-sm">{description}</p>
-      {action && <div className="mt-4">{action}</div>}
+      <h3 className="text-xl font-semibold font-display text-[var(--text-primary)] relative z-10">{title}</h3>
+      <p className="text-sm text-[var(--text-secondary)] mt-2 max-w-sm relative z-10 leading-relaxed">{description}</p>
+      {action && <div className="mt-6 relative z-10">{action}</div>}
     </div>
   );
 }
